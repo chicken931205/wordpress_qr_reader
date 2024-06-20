@@ -50,7 +50,9 @@ if ( !class_exists( 'QR_Reader' ) ) {
 			wp_enqueue_script( 'qr_alignpat_js', $plugin_dir_path . 'library/src/alignpat.js', array(), qr_reader_version, true );
 			wp_enqueue_script( 'qr_databr_js', $plugin_dir_path . 'library/src/databr.js', array(), qr_reader_version, true );
 
-			wp_enqueue_script( 'admin_js', $plugin_dir_path . 'src/asset/js/admin.js', array( 'jquery' ), qr_reader_version, true );
+			wp_enqueue_script( 'qr_packed_js', "https://rawgit.com/sitepoint-editors/jsqrcode/master/src/qr_packed.js", array(), qr_reader_version, true );
+
+			wp_enqueue_script( 'admin_js', $plugin_dir_path . 'src/asset/js/qrCodeScanner.js', array( 'jquery' ), qr_reader_version, true );
 
 			wp_enqueue_style( 'style', $plugin_dir_path . 'src/asset/css/style.scss', [], '1.0.1' );
 	   }
