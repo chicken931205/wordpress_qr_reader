@@ -1,5 +1,4 @@
-const qrcode = window.qrcode;
-
+const qrcode_reader = window.qrcode;
 const video = document.createElement("video");
 const canvasElement = document.getElementById("qr-canvas");
 const canvas = canvasElement.getContext("2d");
@@ -10,7 +9,7 @@ const btnScanQR = document.getElementById("btn-scan-qr");
 
 let scanning = false;
 
-qrcode.callback = res => {
+qrcode_reader.callback = res => {
   if (res) {
     outputData.innerText = res;
     scanning = false;
@@ -51,7 +50,7 @@ function tick() {
 
 function scan() {
   try {
-    qrcode.decode();
+    qrcode_reader.decode();
   } catch (e) {
     setTimeout(scan, 300);
   }
