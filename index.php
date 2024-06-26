@@ -30,10 +30,27 @@ if ( !class_exists( 'QR_Reader' ) ) {
 		}	
 
 		function load_block_editor_assets() {
+			$current_user = wp_get_current_user();
+			$user_id = $current_user->ID;
+
+			$team_id = get_field('team_id', 'user_' . $user_id);
+			$minecraft_id = get_field('minecraft_id', 'user_' . $user_id);
+			$server_id = get_field('server_id', 'user_' . $user_id);
+			$game_id = get_field('game_id', 'user_' . $user_id);
+			$group_id = get_field('group_id', 'user_' . $user_id);
+
 			$plugin_dir_path = plugin_dir_url(qr_reader_plugin_file);
 			wp_enqueue_style( 'style', $plugin_dir_path . 'src/asset/css/style.scss', [], qr_reader_version );
 			wp_enqueue_script( 'qr_packed_js', "https://rawgit.com/sitepoint-editors/jsqrcode/master/src/qr_packed.js", array(), qr_reader_version, true );
-			wp_enqueue_script( 'qrCodeScanner_js', $plugin_dir_path . 'src/asset/js/qrCodeScanner.js', array(), qr_reader_version, true );
+			
+			wp_register_script('qrCodeScanner_js', $plugin_dir_path . 'src/asset/js/qrCodeScanner.js', array(), qr_reader_version, true);
+			wp_localize_script('qrCodeScanner_js', 'user_profile', [
+				'team_id' => $team_id,
+				'minecraft_id' => $minecraft_id,
+				'server_id' => $server_id,
+				'game_id' => $game_id,
+				'group_id' => $group_id,
+			]);
 		}
 
 		function render_block_qr_reader() {

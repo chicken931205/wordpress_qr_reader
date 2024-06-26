@@ -21,6 +21,14 @@ qrcode_reader.callback = res => {
     qrResult.hidden = false;
     canvasElement.hidden = true;
     btnScanQR.hidden = false;
+
+    setTimeout(() => {
+      if (user_profile.game_id && user_profile.team_id && user_profile.group_id) {
+        window.location.href = `${res}?game_id=${user_profile.game_id}&team_id=${user_profile.team_id}&group_id=${user_profile.group_id}`;
+      } else {
+        alert("You must set Gameplay info in the user profile page.");
+      }
+    }, 1000);
   }
 };
 
