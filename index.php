@@ -33,11 +33,17 @@ if ( !class_exists( 'QR_Reader' ) ) {
 			$current_user = wp_get_current_user();
 			$user_id = $current_user->ID;
 
-			$team_id = get_field('team_id', 'user_' . $user_id);
-			$minecraft_id = get_field('minecraft_id', 'user_' . $user_id);
-			$server_id = get_field('server_id', 'user_' . $user_id);
-			$game_id = get_field('game_id', 'user_' . $user_id);
-			$group_id = get_field('group_id', 'user_' . $user_id);
+			if (is_user_logged_in()) {
+				$team_id = get_field('team_id', 'user_' . $user_id);
+				$minecraft_id = get_field('minecraft_id', 'user_' . $user_id);
+				$server_id = get_field('server_id', 'user_' . $user_id);
+				$game_id = get_field('game_id', 'user_' . $user_id);
+				$group_id = get_field('group_id', 'user_' . $user_id);
+				$is_logged_in = true;
+			} else {
+				$is_logged_in = false;
+			}
+
 
 			$plugin_dir_path = plugin_dir_url(qr_reader_plugin_file);
 			wp_enqueue_style( 'style', $plugin_dir_path . 'src/asset/css/style.scss', [], qr_reader_version );
@@ -51,6 +57,7 @@ if ( !class_exists( 'QR_Reader' ) ) {
 				'server_id' => $server_id,
 				'game_id' => $game_id,
 				'group_id' => $group_id,
+				'is_logged_in' => $is_logged_in
 			]);
 		}
 
@@ -72,7 +79,7 @@ if ( !class_exists( 'QR_Reader' ) ) {
 					</div>
 
 					<div id="qr-warning"  hidden="">
-						<b>Warning:</b> <span> You must set Gameplay info in the User profile page.</span>
+						<b>Warning:</b> <span id="warningData"></span>
 					</div>
 				</div>';
 		}

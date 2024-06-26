@@ -6,6 +6,7 @@ const canvas = canvasElement.getContext("2d");
 const qrResult = document.getElementById("qr-result");
 const qrWarning = document.getElementById("qr-warning");
 const outputData = document.getElementById("outputData");
+const warningData = document.getElementById("warningData");
 const btnScanQR = document.getElementById("btn-scan-qr");
 
 let scanning = false;
@@ -24,10 +25,16 @@ qrcode_reader.callback = res => {
     btnScanQR.hidden = false;
 
     setTimeout(() => {
+      if (!user_profile.is_logged_in) {
+        warningData.innerText = "You must log in.";
+        return;
+      }
+
       if (user_profile.game_id && user_profile.team_id && user_profile.group_id) {
         window.location.href = `${res}?game_id=${user_profile.game_id}&team_id=${user_profile.team_id}&group_id=${user_profile.group_id}`;
       } else {
         qrWarning.hidden = false;
+        warningData.innerText = "You must set Gameplay info in the User profile page.";
       }
     }, 1000);
   }
