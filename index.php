@@ -44,6 +44,7 @@ if ( !class_exists( 'QR_Reader' ) ) {
 			wp_enqueue_script( 'qr_packed_js', "https://rawgit.com/sitepoint-editors/jsqrcode/master/src/qr_packed.js", array(), qr_reader_version, true );
 			
 			wp_register_script('qrCodeScanner_js', $plugin_dir_path . 'src/asset/js/qrCodeScanner.js', array(), qr_reader_version, true);
+			wp_enqueue_script('qrCodeScanner_js');
 			wp_localize_script('qrCodeScanner_js', 'user_profile', [
 				'team_id' => $team_id,
 				'minecraft_id' => $minecraft_id,
