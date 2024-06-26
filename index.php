@@ -69,6 +69,10 @@ if ( !class_exists( 'QR_Reader' ) ) {
 					<div id="qr-result" hidden="">
 						<b>Data:</b> <span id="outputData"></span>
 					</div>
+
+					<div id="qr-warning"  hidden="">
+						<b>Warning:</b> <span> You must set Gameplay info in the User profile page.</span>
+					</div>
 				</div>';
 		}
    }

@@ -4,6 +4,7 @@ const canvasElement = document.getElementById("qr-canvas");
 const canvas = canvasElement.getContext("2d");
 
 const qrResult = document.getElementById("qr-result");
+const qrWarning = document.getElementById("qr-warning");
 const outputData = document.getElementById("outputData");
 const btnScanQR = document.getElementById("btn-scan-qr");
 
@@ -26,7 +27,7 @@ qrcode_reader.callback = res => {
       if (user_profile.game_id && user_profile.team_id && user_profile.group_id) {
         window.location.href = `${res}?game_id=${user_profile.game_id}&team_id=${user_profile.team_id}&group_id=${user_profile.group_id}`;
       } else {
-        alert("You must set Gameplay info in the user profile page.");
+        qrWarning.hidden = false;
       }
     }, 1000);
   }
@@ -38,6 +39,7 @@ btnScanQR.onclick = () => {
     .then(function(stream) {
       scanning = true;
       qrResult.hidden = true;
+      qrWarning.hidden = true;
       btnScanQR.hidden = true;
       canvasElement.hidden = false;
       video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
