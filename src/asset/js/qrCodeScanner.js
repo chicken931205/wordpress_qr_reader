@@ -26,6 +26,7 @@ qrcode_reader.callback = res => {
 
     setTimeout(() => {
       if (!user_profile.is_logged_in) {
+        qrWarning.hidden = false;
         warningData.innerText = "You must log in.";
         return;
       }
