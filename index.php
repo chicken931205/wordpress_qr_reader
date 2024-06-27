@@ -44,7 +44,6 @@ if ( !class_exists( 'QR_Reader' ) ) {
 				$is_logged_in = false;
 			}
 
-
 			$plugin_dir_path = plugin_dir_url(qr_reader_plugin_file);
 			wp_enqueue_style( 'style', $plugin_dir_path . 'src/asset/css/style.scss', [], qr_reader_version );
 			wp_enqueue_script( 'qr_packed_js', "https://rawgit.com/sitepoint-editors/jsqrcode/master/src/qr_packed.js", array(), qr_reader_version, true );
