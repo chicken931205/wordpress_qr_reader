@@ -18,6 +18,7 @@ if ( !class_exists( 'QR_Reader' ) ) {
 	   	public function __construct() {
 			add_action( 'init', array( &$this, 'qr_reader__register_block' ) );
 			add_action( 'enqueue_block_assets', array( &$this, 'load_block_editor_assets' ) );
+			add_filter( 'script_loader_tag', array( &$this, 'add_type_attribute_to_script_tag'), 10, 3 );
 	   	}
 
 		function qr_reader__register_block() {
@@ -27,7 +28,14 @@ if ( !class_exists( 'QR_Reader' ) ) {
 					'render_callback' => array( &$this, 'render_block_qr_reader' ),
 				)
 			);
-		}	
+		}
+
+		function add_type_attribute_to_script_tag($tag, $handle, $src) {
+			if ('qrCodeScanner_js' === $handle) {
+				$tag = '<script type="module" src="' . esc_url($src) . '"></script>';
+			}
+			return $tag;
+		}
 
 		function load_block_editor_assets() {
 			$current_user = wp_get_current_user();
@@ -71,8 +79,8 @@ if ( !class_exists( 'QR_Reader' ) ) {
 						<img src="' . $plugin_dir_path . 'src/asset/qr_icon.svg">
 					<a/>
 
-					<canvas hidden="" id="qr-canvas"></canvas>
-
+					<button id="btn-stop-scan" type="submit"  hidden="">Stop Scanning</button>
+					
 					<div id="qr-result" hidden="">
 						<b>Data:</b> <span id="outputData"></span>
 					</div>
