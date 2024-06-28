@@ -18,8 +18,8 @@ if ( !class_exists( 'QR_Reader' ) ) {
 	   	public function __construct() {
 			add_action( 'init', array( &$this, 'qr_reader__register_block' ) );
 			add_action( 'enqueue_block_assets', array( &$this, 'load_block_editor_assets' ) );
-			add_filter( 'script_loader_tag', array( &$this, 'add_type_attribute_to_script_tag'), 10, 3 );
-			add_filter( 'acf/load_field/key=pages', 'set_pages_field' );
+			add_filter( 'script_loader_tag', array( &$this, 'add_type_attribute_to_script_tag' ), 10, 3 );
+			add_filter( 'acf/load_field/name=pages', array( &$this, 'set_pages_field' ), 10, 1 );
 	   	}
 
 		function qr_reader__register_block() {
