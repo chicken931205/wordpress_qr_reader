@@ -33,7 +33,7 @@ function setResult(label, result) {
   stop_scan();
   qrResult.hidden = false;
 
-  console.log(result.data);
+  console.log(`embed code: ${result.data}`);
   label.textContent = result.data;
   
   setTimeout(() => {
