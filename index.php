@@ -15,11 +15,17 @@ define( 'qr_reader_plugin_file', __FILE__ );
 if ( !class_exists( 'QR_Reader' ) ) {
    class QR_Reader {
 
+		private $_gameplay_metakey = "gameplay";
+
 	   	public function __construct() {
 			add_action( 'init', array( &$this, 'qr_reader__register_block' ) );
 			add_action( 'enqueue_block_assets', array( &$this, 'load_block_editor_assets' ) );
 			add_filter( 'script_loader_tag', array( &$this, 'add_type_attribute_to_script_tag' ), 10, 3 );
 			add_filter( 'acf/load_field/name=pages', array( &$this, 'set_pages_field' ), 10, 1 );
+			add_action( 'profile_update', array( &$this, 'save_gameplay_fields' ), 10, 2 );
+			add_action( 'current_screen', array( &$this, 'user_profile_init' ) );
+			add_action('wp_ajax_change_select_page', array( &$this, 'change_select_page_callback' ) );
+			add_action('wp_ajax_nopriv_change_select_page', array( &$this, 'change_select_page_callback' ) );
 	   	}
 
 		function qr_reader__register_block() {
@@ -38,6 +44,62 @@ if ( !class_exists( 'QR_Reader' ) ) {
 			return $tag;
 		}
 
+		private function _get_acf_field_key($field_name) {
+			$field = acf_get_field($field_name);
+			if ($field) {
+				return $field['key'];
+			}
+			return '';
+		}
+
+		function user_profile_init() {
+			$current_screen = get_current_screen();
+
+			if (!is_admin() || !($current_screen && $current_screen->base == 'profile')) {
+				return;
+			}
+
+			$pages_field_key = $this->_get_acf_field_key('pages');
+			$team_id_field_key = $this->_get_acf_field_key('team_id');
+			$minecraft_id_field_key = $this->_get_acf_field_key('minecraft_id');
+			$server_id_field_key = $this->_get_acf_field_key('server_id');
+			$game_id_field_key = $this->_get_acf_field_key('game_id');
+			$group_id_field_key = $this->_get_acf_field_key('group_id');
+
+			$plugin_dir_path = plugin_dir_url(qr_reader_plugin_file);
+			wp_register_script('userProfile_js', $plugin_dir_path . 'src/asset/js/userProfile.js', array('jquery'), qr_reader_version, true);
+			wp_enqueue_script('userProfile_js');
+			wp_localize_script('userProfile_js', 'gameplay', [
+				'pages_field_key' => $pages_field_key,
+				'team_id_field_key' => $team_id_field_key,
+				'minecraft_id_field_key' => $minecraft_id_field_key,
+				'server_id_field_key' => $server_id_field_key,
+				'game_id_field_key' => $game_id_field_key,
+				'group_id_field_key' => $group_id_field_key,
+				'ajax_url' => admin_url('admin-ajax.php'),
+        		'nonce'    => wp_create_nonce('ajax_nonce')
+			]);
+		}
+
+		function change_select_page_callback() {
+			if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'ajax_nonce' ) ) {
+				wp_send_json_error( 'Unauthorized request' );
+			}
+
+			$page_id = $_POST['page_id'];
+
+			$current_user = wp_get_current_user();
+			$user_id = $current_user->ID;
+
+			$gameplay = get_user_meta($user_id, $this->_gameplay_metakey);
+		
+			$response = array(
+				'gameplay' => $gameplay[0][$page_id] ? $gameplay[0][$page_id] : [] 
+			);
+
+			wp_send_json_success($response);
+		}
+
 		function set_pages_field( $field ) {
 			$field['choices'] = [];
 		
@@ -50,17 +112,44 @@ if ( !class_exists( 'QR_Reader' ) ) {
 		
 			return $field;
 		}
+
+		function save_gameplay_fields($user_id, $old_user_data) {
+			// delete_user_meta($user_id, $this->_gameplay_metakey);
+			// return false;
+
+			if (!current_user_can('edit_user', $user_id)) {
+				return false;
+			}
+
+			$page_id = get_field('pages', 'user_' . $user_id);
+			$team_id = get_field('team_id', 'user_' . $user_id);
+			$minecraft_id = get_field('minecraft_id', 'user_' . $user_id);
+			$server_id = get_field('server_id', 'user_' . $user_id);
+			$game_id = get_field('game_id', 'user_' . $user_id);
+			$group_id = get_field('group_id', 'user_' . $user_id);
+
+			$gameplay = get_user_meta($user_id, $this->_gameplay_metakey);
+			if ($gameplay) $gameplay = $gameplay[0];
+			$gameplay[$page_id] = array(
+				'team_id' => $team_id,
+				'minecraft_id' => $minecraft_id,
+				'server_id' => $server_id,
+				'game_id' => $game_id,
+				'group_id' => $group_id,
+			);
+
+			update_user_meta($user_id, $this->_gameplay_metakey, $gameplay);
+		}
 		
 		function load_block_editor_assets() {
 			$current_user = wp_get_current_user();
 			$user_id = $current_user->ID;
 
+			global $post;
+			$current_page_id = $post->ID;
+
 			if (is_user_logged_in()) {
-				$team_id = get_field('team_id', 'user_' . $user_id);
-				$minecraft_id = get_field('minecraft_id', 'user_' . $user_id);
-				$server_id = get_field('server_id', 'user_' . $user_id);
-				$game_id = get_field('game_id', 'user_' . $user_id);
-				$group_id = get_field('group_id', 'user_' . $user_id);
+				
 				$is_logged_in = true;
 			} else {
 				$is_logged_in = false;
