@@ -1,6 +1,6 @@
 import QrScanner from "./qr-scanner.min.js";
 
-const video = document.createElement("video");
+const video = document.getElementById('qr-video');
 
 const camQrResult = document.getElementById('outputData');
 const qrResult = document.getElementById("qr-result");

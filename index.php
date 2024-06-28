@@ -75,9 +75,13 @@ if ( !class_exists( 'QR_Reader' ) ) {
 				'<div id="container">
 					<h1>QR Code Scanner</h1>
 
+					<div id="video-container">
+						<video id="qr-video"></video>
+					</div>
+
 					<a id="btn-scan-qr">
 						<img src="' . $plugin_dir_path . 'src/asset/qr_icon.svg">
-					<a/>
+					</a>
 
 					<button id="btn-stop-scan" type="submit"  hidden="">Stop Scanning</button>
 					
