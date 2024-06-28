@@ -75,8 +75,8 @@ if ( !class_exists( 'QR_Reader' ) ) {
 				'<div id="container">
 					<h1>QR Code Scanner</h1>
 
-					<div id="video-container">
-						<video id="qr-video" hidden></video>
+					<div id="video-container" hidden="">
+						<video id="qr-video"></video>
 					</div>
 
 					<a id="btn-scan-qr">

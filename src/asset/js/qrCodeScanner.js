@@ -1,6 +1,7 @@
 import QrScanner from "./qr-scanner.min.js";
 
 const video = document.getElementById('qr-video');
+const videoContainer = document.getElementById('video-container');
 
 const outputData = document.getElementById('outputData');
 const qrResult = document.getElementById("qr-result");
@@ -13,7 +14,7 @@ function stop_scan() {
   qrResult.hidden = true;
   btnScanQR.hidden = false;
   btnStopScan.hidden = true;
-  video.hidden = true;
+  videoContainer.hidden = true;
 
   scanner.stop();
 }
@@ -23,7 +24,7 @@ function start_scan() {
   qrWarning.hidden = true;
   btnScanQR.hidden = true;
   btnStopScan.hidden = false;
-  video.hidden = false;
+  videoContainer.hidden = false;
 
   scanner.start();
 }
@@ -31,7 +32,7 @@ function start_scan() {
 function setResult(label, result) {
   stop_scan();
   qrResult.hidden = false;
-  
+
   console.log(result.data);
   label.textContent = result.data;
   
