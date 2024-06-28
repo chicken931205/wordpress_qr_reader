@@ -56,7 +56,7 @@ const scanner = new QrScanner(video, result => setResult(outputData, result), {
   onDecodeError: error => {
       outputData.textContent = error;
       outputData.style.color = 'inherit';
-      stop_scan();
+      qrResult.hidden = false;
   },
   highlightScanRegion: true,
   highlightCodeOutline: true,
