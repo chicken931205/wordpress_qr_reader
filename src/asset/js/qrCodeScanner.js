@@ -11,7 +11,7 @@ const btnScanQR = document.getElementById("btn-scan-qr");
 const btnStopScan = document.getElementById("btn-stop-scan");
 
 function stop_scan() {
-  qrResult.hidden = true;
+  qrResult.hidden = false;
   btnScanQR.hidden = false;
   btnStopScan.hidden = true;
   videoContainer.hidden = true;
@@ -31,7 +31,6 @@ function start_scan() {
 
 function setResult(label, result) {
   stop_scan();
-  qrResult.hidden = false;
 
   console.log(`embed code: ${result.data}`);
   label.textContent = result.data;
@@ -57,6 +56,7 @@ const scanner = new QrScanner(video, result => setResult(outputData, result), {
   onDecodeError: error => {
       outputData.textContent = error;
       outputData.style.color = 'inherit';
+      stop_scan();
   },
   highlightScanRegion: true,
   highlightCodeOutline: true,
