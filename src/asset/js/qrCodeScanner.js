@@ -2,7 +2,7 @@ import QrScanner from "./qr-scanner.min.js";
 
 const video = document.getElementById('qr-video');
 
-const camQrResult = document.getElementById('outputData');
+const outputData = document.getElementById('outputData');
 const qrResult = document.getElementById("qr-result");
 const qrWarning = document.getElementById("qr-warning");
 const warningData = document.getElementById("warningData");
@@ -10,9 +10,10 @@ const btnScanQR = document.getElementById("btn-scan-qr");
 const btnStopScan = document.getElementById("btn-stop-scan");
 
 function stop_scan() {
-  qrResult.hidden = false;
+  qrResult.hidden = true;
   btnScanQR.hidden = false;
   btnStopScan.hidden = true;
+  video.hidden = true;
 
   scanner.stop();
 }
@@ -22,13 +23,15 @@ function start_scan() {
   qrWarning.hidden = true;
   btnScanQR.hidden = true;
   btnStopScan.hidden = false;
+  video.hidden = false;
 
   scanner.start();
 }
 
 function setResult(label, result) {
   stop_scan();
-
+  qrResult.hidden = false;
+  
   console.log(result.data);
   label.textContent = result.data;
   
@@ -49,10 +52,10 @@ function setResult(label, result) {
 
 }
 
-const scanner = new QrScanner(video, result => setResult(camQrResult, result), {
+const scanner = new QrScanner(video, result => setResult(outputData, result), {
   onDecodeError: error => {
-      camQrResult.textContent = error;
-      camQrResult.style.color = 'inherit';
+      outputData.textContent = error;
+      outputData.style.color = 'inherit';
   },
   highlightScanRegion: true,
   highlightCodeOutline: true,
