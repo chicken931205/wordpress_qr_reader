@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: QR Reader
- * Plugin URI: https://github.com/chicken931205/gutenberg_offers_block
+ * Plugin URI: https://github.com/chicken931205/wordpress_qr_reader
  * Description: This is a plugin for QR code scanning only on mobile device.
  * Version: 1.1.0
  * Author: Golden Chicken
@@ -19,6 +19,7 @@ if ( !class_exists( 'QR_Reader' ) ) {
 			add_action( 'init', array( &$this, 'qr_reader__register_block' ) );
 			add_action( 'enqueue_block_assets', array( &$this, 'load_block_editor_assets' ) );
 			add_filter( 'script_loader_tag', array( &$this, 'add_type_attribute_to_script_tag'), 10, 3 );
+			add_filter( 'acf/load_field/key=pages', 'set_pages_field' );
 	   	}
 
 		function qr_reader__register_block() {
@@ -37,6 +38,19 @@ if ( !class_exists( 'QR_Reader' ) ) {
 			return $tag;
 		}
 
+		function set_pages_field( $field ) {
+			$field['choices'] = [];
+		
+			$pages = get_pages();
+			foreach ($pages as $page) {
+				$value = $page->ID;
+				$label = $page->post_title;
+				$field['choices'][ $value ] = $label;
+			}
+		
+			return $field;
+		}
+		
 		function load_block_editor_assets() {
 			$current_user = wp_get_current_user();
 			$user_id = $current_user->ID;
