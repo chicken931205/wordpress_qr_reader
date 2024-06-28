@@ -44,7 +44,7 @@ function setResult(label, result) {
     }
 
     if (user_profile.game_id && user_profile.team_id && user_profile.group_id) {
-      window.location.href = `${res}?game_id=${user_profile.game_id}&team_id=${user_profile.team_id}&group_id=${user_profile.group_id}`;
+      window.location.href = `${result.data}?game_id=${user_profile.game_id}&team_id=${user_profile.team_id}&group_id=${user_profile.group_id}`;
     } else {
       qrWarning.hidden = false;
       warningData.innerText = "You must set Gameplay info in the User profile page.";
