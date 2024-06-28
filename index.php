@@ -52,6 +52,7 @@ if ( !class_exists( 'QR_Reader' ) ) {
 			return '';
 		}
 
+		//add js to user profile page
 		function user_profile_init() {
 			$current_screen = get_current_screen();
 
@@ -81,6 +82,7 @@ if ( !class_exists( 'QR_Reader' ) ) {
 			]);
 		}
 
+		//handle change event of pages field
 		function change_select_page_callback() {
 			if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'ajax_nonce' ) ) {
 				wp_send_json_error( 'Unauthorized request' );
@@ -100,6 +102,7 @@ if ( !class_exists( 'QR_Reader' ) ) {
 			wp_send_json_success($response);
 		}
 
+		//set options to pages field in user profile page
 		function set_pages_field( $field ) {
 			$field['choices'] = [];
 		
@@ -113,6 +116,7 @@ if ( !class_exists( 'QR_Reader' ) ) {
 			return $field;
 		}
 
+		//update user profile
 		function save_gameplay_fields($user_id, $old_user_data) {
 			// delete_user_meta($user_id, $this->_gameplay_metakey);
 			// return false;
@@ -149,11 +153,17 @@ if ( !class_exists( 'QR_Reader' ) ) {
 			$current_page_id = $post->ID;
 
 			if (is_user_logged_in()) {
-				
 				$is_logged_in = true;
 			} else {
 				$is_logged_in = false;
 			}
+
+			$gameplay = get_user_meta($user_id, $this->_gameplay_metakey);
+			$team_id = $gameplay[0][$current_page_id]['team_id'] ? $gameplay[0][$current_page_id]['team_id'] : "";
+			$minecraft_id = $gameplay[0][$current_page_id]['minecraft_id'] ? $gameplay[0][$current_page_id]['minecraft_id']: "";
+			$server_id = $gameplay[0][$current_page_id]['server_id'] ? $gameplay[0][$current_page_id]['server_id'] : "";
+			$game_id = $gameplay[0][$current_page_id]['game_id'] ? $gameplay[0][$current_page_id]['game_id'] : "";
+			$group_id = $gameplay[0][$current_page_id]['group_id'] ? $gameplay[0][$current_page_id]['group_id'] : "";
 
 			$plugin_dir_path = plugin_dir_url(qr_reader_plugin_file);
 			wp_enqueue_style( 'style', $plugin_dir_path . 'src/asset/css/style.scss', [], qr_reader_version );
