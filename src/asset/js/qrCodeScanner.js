@@ -1,4 +1,4 @@
-import QrScanner from "qr-scanner.min.js";
+import QrScanner from "./qr-scanner.min.js";
 
 const video = document.createElement("video");
 
