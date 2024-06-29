@@ -29,7 +29,83 @@ function start_scan() {
   scanner.start();
 }
 
-function setResult(label, result) {
+function redirectToMinecraft(redirect_url) {
+  var param_set = false;
+  if (param_enable.team_id_enable && param_enable.team_id) {
+    redirect_url = `${redirect_url}?team_id=${param_enable.team_id}`;
+    param_set = true;
+  }
+
+  if (param_enable.minecraft_id_enable === "1" && param_enable.minecraft_id) {
+    if (param_set) {
+      redirect_url = `${redirect_url}%`;
+    } else {
+      redirect_url = `${redirect_url}?`;
+    }
+    redirect_url = `${redirect_url}minecraft_id=${param_enable.minecraft_id}`;
+
+    param_set = true;
+  }
+
+  if (param_enable.server_id_enable === "1" && param_enable.server_id) {
+    if (param_set) {
+      redirect_url = `${redirect_url}%`;
+    } else {
+      redirect_url = `${redirect_url}?`;
+    }
+    redirect_url = `${redirect_url}server_id=${param_enable.server_id}`;
+    param_set = true;
+  }
+
+  if (param_enable.game_id_enable === "1" && param_enable.game_id) {
+    if (param_set) {
+      redirect_url = `${redirect_url}%`;
+    } else {
+      redirect_url = `${redirect_url}?`;
+    }
+    redirect_url = `${redirect_url}game_id=${param_enable.game_id}`;
+    param_set = true;
+  }
+
+  if (param_enable.group_id_enable === "1" && param_enable.group_id) {
+    if (param_set) {
+      redirect_url = `${redirect_url}%`;
+    } else {
+      redirect_url = `${redirect_url}?`;
+    }
+    redirect_url = `${redirect_url}group_id=${param_enable.group_id}`;
+    param_set = true;
+  }
+
+  if (param_enable.gamipress_ranks_enable === "1" && param_enable.user_rank) {
+    if (param_set) {
+      redirect_url = `${redirect_url}%`;
+    } else {
+      redirect_url = `${redirect_url}?`;
+    }
+    redirect_url = `${redirect_url}user_rank=${param_enable.user_rank}`;
+    param_set = true;
+  }
+
+  if (param_enable.gamipress_points_enable === "1" && param_enable.user_points) {
+    if (param_set) {
+      redirect_url = `${redirect_url}%`;
+    } else {
+      redirect_url = `${redirect_url}?`;
+    }
+    redirect_url = `${redirect_url}user_points=${param_enable.user_points}`;
+    param_set = true;
+  }
+
+  if (param_set) {
+    window.location.href = redirect_url;
+  } else {
+    qrWarning.hidden = false;
+    warningData.innerText = "You must set parameters in the User profile page and QR Reader Settings page.";
+  }
+}
+
+function setScanResult(label, result) {
   stop_scan();
 
   console.log(`embed code: ${result.data}`);
@@ -42,85 +118,12 @@ function setResult(label, result) {
       return;
     }
 
-    var redirect_url = result.data;
-    var param_set = false;
-    if (param_enable.team_id_enable && param_enable.team_id) {
-      redirect_url = `${redirect_url}?team_id=${param_enable.team_id}`;
-      param_set = true;
-    }
-
-    if (param_enable.minecraft_id_enable && param_enable.minecraft_id) {
-      if (param_set) {
-        redirect_url = `${redirect_url}%`;
-      } else {
-        redirect_url = `${redirect_url}?`;
-      }
-      redirect_url = `${redirect_url}minecraft_id=${param_enable.minecraft_id}`;
-
-      param_set = true;
-    }
-
-    if (param_enable.server_id_enable && param_enable.server_id) {
-      if (param_set) {
-        redirect_url = `${redirect_url}%`;
-      } else {
-        redirect_url = `${redirect_url}?`;
-      }
-      redirect_url = `${redirect_url}server_id=${param_enable.server_id}`;
-      param_set = true;
-    }
-
-    if (param_enable.game_id_enable && param_enable.game_id) {
-      if (param_set) {
-        redirect_url = `${redirect_url}%`;
-      } else {
-        redirect_url = `${redirect_url}?`;
-      }
-      redirect_url = `${redirect_url}game_id=${param_enable.game_id}`;
-      param_set = true;
-    }
-
-    if (param_enable.group_id_enable && param_enable.group_id) {
-      if (param_set) {
-        redirect_url = `${redirect_url}%`;
-      } else {
-        redirect_url = `${redirect_url}?`;
-      }
-      redirect_url = `${redirect_url}group_id=${param_enable.group_id}`;
-      param_set = true;
-    }
-
-    if (param_enable.gamipress_ranks_enable && param_enable.user_rank) {
-      if (param_set) {
-        redirect_url = `${redirect_url}%`;
-      } else {
-        redirect_url = `${redirect_url}?`;
-      }
-      redirect_url = `${redirect_url}user_rank=${param_enable.user_rank}`;
-      param_set = true;
-    }
-
-    if (param_enable.gamipress_points_enable && param_enable.user_points) {
-      if (param_set) {
-        redirect_url = `${redirect_url}%`;
-      } else {
-        redirect_url = `${redirect_url}?`;
-      }
-      redirect_url = `${redirect_url}user_points=${param_enable.user_points}`;
-      param_set = true;
-    }
-
-    if (param_set) {
-      window.location.href = redirect_url;
-    } else {
-      qrWarning.hidden = false;
-      warningData.innerText = "You must set parameters in the User profile page and QR Reader Settings page.";
-    }
+    redirectToMinecraft(result.data);
   }, 1000);
 
 }
 
-const scanner = new QrScanner(video, result => setResult(outputData, result), {
+const scanner = new QrScanner(video, result => setScanResult(outputData, result), {
   onDecodeError: error => {
       outputData.textContent = error;
       outputData.style.color = 'inherit';

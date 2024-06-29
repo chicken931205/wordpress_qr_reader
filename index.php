@@ -225,13 +225,13 @@ if ( !class_exists( 'QR_Reader' ) ) {
 
 			$param_enable = get_option($this->_param_enable_key, []);
 			if (isset($param_enable[$current_page_id])){
-				$team_id_enable = (int) $param_enable[$current_page_id]['team_id_enable'];
-				$minecraft_id_enable = (int) $param_enable[$current_page_id]['minecraft_id_enable'];
-				$server_id_enable = (int) $param_enable[$current_page_id]['server_id_enable'];
-				$game_id_enable= (int) $param_enable[$current_page_id]['game_id_enable'];
-				$group_id_enable = (int) $param_enable[$current_page_id]['group_id_enable'];
-				$gamipress_ranks_enable = (int) $param_enable[$current_page_id]['gamipress_ranks_enable'];
-				$gamipress_points_enable = (int) $param_enable[$current_page_id]['gamipress_points_enable'];	
+				$team_id_enable = $param_enable[$current_page_id]['team_id_enable'];
+				$minecraft_id_enable = $param_enable[$current_page_id]['minecraft_id_enable'];
+				$server_id_enable = $param_enable[$current_page_id]['server_id_enable'];
+				$game_id_enable= $param_enable[$current_page_id]['game_id_enable'];
+				$group_id_enable = $param_enable[$current_page_id]['group_id_enable'];
+				$gamipress_ranks_enable = $param_enable[$current_page_id]['gamipress_ranks_enable'];
+				$gamipress_points_enable = $param_enable[$current_page_id]['gamipress_points_enable'];	
 			} else {
 				$team_id_enable = 0;
 				$minecraft_id_enable = 0;
