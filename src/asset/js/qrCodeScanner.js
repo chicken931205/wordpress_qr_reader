@@ -36,7 +36,7 @@ function setResult(label, result) {
   label.textContent = result.data;
   
   setTimeout(() => {
-    if (!user_profile.is_logged_in) {
+    if (!param_enable.is_logged_in) {
       qrWarning.hidden = false;
       warningData.innerText = "You must log in.";
       return;
@@ -44,38 +44,38 @@ function setResult(label, result) {
 
     var redirect_url = result.data;
     var param_set = false;
-    if (user_profile.team_id_enable && user_profile.team_id) {
-      redirect_url = `${redirect_url}?team_id=${user_profile.team_id}`;
+    if (param_enable.team_id_enable && param_enable.team_id) {
+      redirect_url = `${redirect_url}?team_id=${param_enable.team_id}`;
       param_set = true;
     }
 
-    if (user_profile.minecraft_id_enable && user_profile.minecraft_id) {
-      redirect_url = `${redirect_url}?minecraft_id=${user_profile.minecraft_id}`;
+    if (param_enable.minecraft_id_enable && param_enable.minecraft_id) {
+      redirect_url = `${redirect_url}?minecraft_id=${param_enable.minecraft_id}`;
       param_set = true;
     }
 
-    if (user_profile.server_id_enable && user_profile.server_id) {
-      redirect_url = `${redirect_url}?server_id=${user_profile.server_id}`;
+    if (param_enable.server_id_enable && param_enable.server_id) {
+      redirect_url = `${redirect_url}?server_id=${param_enable.server_id}`;
       param_set = true;
     }
 
-    if (user_profile.game_id_enable && user_profile.game_id) {
-      redirect_url = `${redirect_url}?game_id=${user_profile.game_id}`;
+    if (param_enable.game_id_enable && param_enable.game_id) {
+      redirect_url = `${redirect_url}?game_id=${param_enable.game_id}`;
       param_set = true;
     }
 
-    if (user_profile.group_id_enable && user_profile.group_id) {
-      redirect_url = `${redirect_url}?group_id=${user_profile.group_id}`;
+    if (param_enable.group_id_enable && param_enable.group_id) {
+      redirect_url = `${redirect_url}?group_id=${param_enable.group_id}`;
       param_set = true;
     }
 
-    if (user_profile.gamipress_ranks_enable && user_profile.user_rank) {
-      redirect_url = `${redirect_url}?user_rank=${user_profile.user_rank}`;
+    if (param_enable.gamipress_ranks_enable && param_enable.user_rank) {
+      redirect_url = `${redirect_url}?user_rank=${param_enable.user_rank}`;
       param_set = true;
     }
 
-    if (user_profile.gamipress_points_enable && user_profile.user_points) {
-      redirect_url = `${redirect_url}?user_points=${user_profile.user_points}`;
+    if (param_enable.gamipress_points_enable && param_enable.user_points) {
+      redirect_url = `${redirect_url}?user_points=${param_enable.user_points}`;
       param_set = true;
     }
 
