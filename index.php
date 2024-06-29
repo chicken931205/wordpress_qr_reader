@@ -15,17 +15,19 @@ define( 'qr_reader_plugin_file', __FILE__ );
 if ( !class_exists( 'QR_Reader' ) ) {
    class QR_Reader {
 
-		private $_gameplay_metakey = "gameplay";
+		private $_param_enable_key = "params_enable";
 
 	   	public function __construct() {
 			add_action( 'init', array( &$this, 'qr_reader__register_block' ) );
 			add_action( 'enqueue_block_assets', array( &$this, 'load_block_editor_assets' ) );
 			add_filter( 'script_loader_tag', array( &$this, 'add_type_attribute_to_script_tag' ), 10, 3 );
 			add_filter( 'acf/load_field/name=pages', array( &$this, 'set_pages_field' ), 10, 1 );
-			add_action( 'profile_update', array( &$this, 'save_gameplay_fields' ), 10, 2 );
-			add_action( 'current_screen', array( &$this, 'user_profile_init' ) );
-			add_action('wp_ajax_change_select_page', array( &$this, 'change_select_page_callback' ) );
-			add_action('wp_ajax_nopriv_change_select_page', array( &$this, 'change_select_page_callback' ) );
+			add_action( 'acf/save_post', array( &$this, 'save_param_enable_fields' ), 10, 1 );
+			add_action( 'current_screen', array( &$this, 'qr_reader_settings_page_init' ) );
+			add_action( 'wp_ajax_change_select_page', array( &$this, 'change_select_page_callback' ) );
+			add_action( 'wp_ajax_nopriv_change_select_page', array( &$this, 'change_select_page_callback' ) );
+			add_action( 'admin_menu', array( &$this, 'add_qr_reader_menu' ) );
+			add_action('admin_init', array( &$this, 'add_acf_form_head') );
 	   	}
 
 		function qr_reader__register_block() {
@@ -35,6 +37,51 @@ if ( !class_exists( 'QR_Reader' ) ) {
 					'render_callback' => array( &$this, 'render_block_qr_reader' ),
 				)
 			);
+		}
+
+		function add_acf_form_head() {
+			if (isset($_GET['page']) && $_GET['page'] === 'qr-reader-settings') {
+				acf_form_head();
+			}
+		}
+
+		function add_qr_reader_menu() {
+			add_menu_page(
+				'QR Reader', // Page title
+				'QR Reader', // Menu title
+				'manage_options', // Capability
+				'qr-reader',  // Menu slug
+				array(&$this, 'display_qr_reader_settings'), 
+				'dashicons-admin-generic', // Icon URL or Dashicon class
+				6                    // Position
+			);
+
+			add_submenu_page(
+				'qr-reader',  // Parent slug
+				'QR Reader Settings',  // Page title
+				'Settings',           // Menu title
+				'manage_options',    // Capability
+				'qr-reader-settings', // Menu slug
+				array(&$this, 'display_qr_reader_settings')
+			);
+
+			remove_submenu_page('qr-reader', 'qr-reader');
+		}
+
+		function display_qr_reader_settings() {
+			$field_group_key = $this->_get_acf_field_group_key("Settings");
+			?>
+				<div class="wrap">
+					<h1>QR Reader Settings</h1>
+					<?php
+						acf_form([
+							'post_id' => 'param_enable_settings', 
+							'field_groups' => [$field_group_key],
+							'submit_value' => 'Save Settings', 
+						]);  
+					?>
+				</div>
+			<?php
 		}
 
 		function add_type_attribute_to_script_tag($tag, $handle, $src) {
@@ -52,31 +99,50 @@ if ( !class_exists( 'QR_Reader' ) ) {
 			return '';
 		}
 
-		//add js to user profile page
-		function user_profile_init() {
+		private function _get_acf_field_group_key($title) {
+			if (!function_exists('acf_get_field_groups')) {
+				return false;
+			}
+			
+			$field_groups = acf_get_field_groups();
+			foreach ($field_groups as $field_group) {
+				if ($field_group['title'] === $title) {
+					return $field_group['key'];
+				}
+			}
+			
+			return false;
+		}
+		
+		//add js to user qr reader settings page
+		function qr_reader_settings_page_init() {
 			$current_screen = get_current_screen();
 
-			if (!is_admin() || !($current_screen && $current_screen->base == 'profile')) {
+			if (!is_admin() || !($current_screen && $current_screen->base == 'qr-reader_page_qr-reader-settings')) {
 				return;
 			}
 
 			$pages_field_key = $this->_get_acf_field_key('pages');
-			$team_id_field_key = $this->_get_acf_field_key('team_id');
-			$minecraft_id_field_key = $this->_get_acf_field_key('minecraft_id');
-			$server_id_field_key = $this->_get_acf_field_key('server_id');
-			$game_id_field_key = $this->_get_acf_field_key('game_id');
-			$group_id_field_key = $this->_get_acf_field_key('group_id');
+			$team_id_enable_field_key = $this->_get_acf_field_key('team_id_enable');
+			$minecraft_id_enable_field_key = $this->_get_acf_field_key('minecraft_id_enable');
+			$server_id_enable_field_key = $this->_get_acf_field_key('server_id_enable');
+			$game_id_enable_field_key = $this->_get_acf_field_key('game_id_enable');
+			$group_id_enable_field_key = $this->_get_acf_field_key('group_id_enable');
+			$gamipress_ranks_enable_field_key = $this->_get_acf_field_key('gamipress_ranks_enable');
+			$gamipress_points_enable_field_key = $this->_get_acf_field_key('gamipress_points_enable');
 
 			$plugin_dir_path = plugin_dir_url(qr_reader_plugin_file);
-			wp_register_script('userProfile_js', $plugin_dir_path . 'src/asset/js/userProfile.js', array('jquery'), qr_reader_version, true);
-			wp_enqueue_script('userProfile_js');
-			wp_localize_script('userProfile_js', 'gameplay', [
+			wp_register_script('qrReaderSettings_js', $plugin_dir_path . 'src/asset/js/qrReaderSettings.js', array('jquery'), qr_reader_version, true);
+			wp_enqueue_script('qrReaderSettings_js');
+			wp_localize_script('qrReaderSettings_js', 'param_enable', [
 				'pages_field_key' => $pages_field_key,
-				'team_id_field_key' => $team_id_field_key,
-				'minecraft_id_field_key' => $minecraft_id_field_key,
-				'server_id_field_key' => $server_id_field_key,
-				'game_id_field_key' => $game_id_field_key,
-				'group_id_field_key' => $group_id_field_key,
+				'team_id_enable_field_key' => $team_id_enable_field_key,
+				'minecraft_id_enable_field_key' => $minecraft_id_enable_field_key,
+				'server_id_enable_field_key' => $server_id_enable_field_key,
+				'game_id_enable_field_key' => $game_id_enable_field_key,
+				'group_id_enable_field_key' => $group_id_enable_field_key,
+				'gamipress_ranks_enable_field_key' => $gamipress_ranks_enable_field_key,
+				'gamipress_points_enable_field_key' => $gamipress_points_enable_field_key,
 				'ajax_url' => admin_url('admin-ajax.php'),
         		'nonce'    => wp_create_nonce('ajax_nonce')
 			]);
@@ -89,14 +155,10 @@ if ( !class_exists( 'QR_Reader' ) ) {
 			}
 
 			$page_id = $_POST['page_id'];
-
-			$current_user = wp_get_current_user();
-			$user_id = $current_user->ID;
-
-			$gameplay = get_user_meta($user_id, $this->_gameplay_metakey);
+			$param_enable = get_option($this->_param_enable_key, []);
 		
 			$response = array(
-				'gameplay' => $gameplay[0][$page_id] ? $gameplay[0][$page_id] : [] 
+				'param_enable' => $param_enable[$page_id] ? $param_enable[$page_id] : [] 
 			);
 
 			wp_send_json_success($response);
@@ -116,33 +178,36 @@ if ( !class_exists( 'QR_Reader' ) ) {
 			return $field;
 		}
 
-		//update user profile
-		function save_gameplay_fields($user_id, $old_user_data) {
-			// delete_user_meta($user_id, $this->_gameplay_metakey);
+		//update param enable settings
+		function save_param_enable_fields($post_id) {
+			// delete_option($this->_param_enable_key);
 			// return false;
 
-			if (!current_user_can('edit_user', $user_id)) {
-				return false;
+			if ($post_id !== 'param_enable_settings') {
+				return;
 			}
 
-			$page_id = get_field('pages', 'user_' . $user_id);
-			$team_id = get_field('team_id', 'user_' . $user_id);
-			$minecraft_id = get_field('minecraft_id', 'user_' . $user_id);
-			$server_id = get_field('server_id', 'user_' . $user_id);
-			$game_id = get_field('game_id', 'user_' . $user_id);
-			$group_id = get_field('group_id', 'user_' . $user_id);
+			$page_id = get_field('pages', $post_id);
+			$team_id_enable = get_field('team_id_enable', $post_id);
+			$minecraft_id_enable = get_field('minecraft_id_enable', $post_id);
+			$server_id_enable = get_field('server_id_enable', $post_id);
+			$game_id_enable = get_field('game_id_enable', $post_id);
+			$group_id_enable = get_field('group_id_enable', $post_id);
+			$gamipress_ranks_enable = get_field('gamipress_ranks_enable', $post_id);
+			$gamipress_points_enable = get_field('gamipress_points_enable', $post_id);
 
-			$gameplay = get_user_meta($user_id, $this->_gameplay_metakey);
-			if ($gameplay) $gameplay = $gameplay[0];
-			$gameplay[$page_id] = array(
-				'team_id' => $team_id,
-				'minecraft_id' => $minecraft_id,
-				'server_id' => $server_id,
-				'game_id' => $game_id,
-				'group_id' => $group_id,
+			$param_enable = get_option($this->_param_enable_key, []);
+			$param_enable[$page_id] = array(
+				'team_id_enable' => $team_id_enable,
+				'minecraft_id_enable' => $minecraft_id_enable,
+				'server_id_enable' => $server_id_enable,
+				'game_id_enable' => $game_id_enable,
+				'group_id_enable' => $group_id_enable,
+				'gamipress_ranks_enable' => $gamipress_ranks_enable,
+				'gamipress_points_enable' => $gamipress_points_enable,
 			);
 
-			update_user_meta($user_id, $this->_gameplay_metakey, $gameplay);
+			update_option($this->_param_enable_key, $param_enable);
 		}
 		
 		function load_block_editor_assets() {
@@ -158,12 +223,34 @@ if ( !class_exists( 'QR_Reader' ) ) {
 				$is_logged_in = false;
 			}
 
-			$gameplay = get_user_meta($user_id, $this->_gameplay_metakey);
-			$team_id = $gameplay[0][$current_page_id]['team_id'] ? $gameplay[0][$current_page_id]['team_id'] : "";
-			$minecraft_id = $gameplay[0][$current_page_id]['minecraft_id'] ? $gameplay[0][$current_page_id]['minecraft_id']: "";
-			$server_id = $gameplay[0][$current_page_id]['server_id'] ? $gameplay[0][$current_page_id]['server_id'] : "";
-			$game_id = $gameplay[0][$current_page_id]['game_id'] ? $gameplay[0][$current_page_id]['game_id'] : "";
-			$group_id = $gameplay[0][$current_page_id]['group_id'] ? $gameplay[0][$current_page_id]['group_id'] : "";
+			$param_enable = get_option($this->_param_enable_key, []);
+			if (isset($param_enable[$current_page_id])){
+				$team_id_enable = $param_enable[$current_page_id]['team_id_enable'];
+				$minecraft_id_enable = $param_enable[$current_page_id]['minecraft_id_enable'];
+				$server_id_enable = $param_enable[$current_page_id]['server_id_enable'];
+				$game_id_enable= $param_enable[$current_page_id]['game_id_enable'];
+				$group_id_enable = $param_enable[$current_page_id]['group_id_enable'];
+				$gamipress_ranks_enable = $param_enable[$current_page_id]['gamipress_ranks_enable'];
+				$gamipress_points_enable = $param_enable[$current_page_id]['gamipress_points_enable'];	
+			} else {
+				$team_id_enable = 0;
+				$minecraft_id_enable = 0;
+				$server_id_enable = 0;
+				$game_id_enable= 0;
+				$group_id_enable = 0;
+				$gamipress_ranks_enable = 0;
+				$gamipress_points_enable = 0;
+			}
+
+			$user_points = gamipress_get_user_points($user_id, 'point');
+			$user_rank = gamipress_get_user_rank($user_id, "gamerank");
+			$user_rank = strtolower($user_rank->post_title);
+
+            $team_id = get_field('team_id', 'user_' . $user_id);
+            $minecraft_id = get_field('minecraft_id', 'user_' . $user_id);
+            $server_id = get_field('server_id', 'user_' . $user_id);
+            $game_id = get_field('game_id', 'user_' . $user_id);
+            $group_id = get_field('group_id', 'user_' . $user_id);
 
 			$plugin_dir_path = plugin_dir_url(qr_reader_plugin_file);
 			wp_enqueue_style( 'style', $plugin_dir_path . 'src/asset/css/style.scss', [], qr_reader_version );
@@ -171,12 +258,21 @@ if ( !class_exists( 'QR_Reader' ) ) {
 			
 			wp_register_script('qrCodeScanner_js', $plugin_dir_path . 'src/asset/js/qrCodeScanner.js', array(), qr_reader_version, true);
 			wp_enqueue_script('qrCodeScanner_js');
-			wp_localize_script('qrCodeScanner_js', 'user_profile', [
+			wp_localize_script('qrCodeScanner_js', 'param_enable', [
+				'team_id_enable' => $team_id_enable,
+				'minecraft_id_enable' => $minecraft_id_enable,
+				'server_id_enable' => $server_id_enable,
+				'game_id_enable' => $game_id_enable,
+				'group_id_enable' => $group_id_enable,
+				'gamipress_ranks_enable' => $gamipress_ranks_enable,
+				'gamipress_points_enable' => $gamipress_points_enable,
 				'team_id' => $team_id,
 				'minecraft_id' => $minecraft_id,
 				'server_id' => $server_id,
 				'game_id' => $game_id,
 				'group_id' => $group_id,
+				'user_rank' => $user_rank,
+				'user_points' => $user_points,
 				'is_logged_in' => $is_logged_in
 			]);
 		}

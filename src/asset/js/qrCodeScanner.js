@@ -42,11 +42,48 @@ function setResult(label, result) {
       return;
     }
 
-    if (user_profile.game_id && user_profile.team_id && user_profile.group_id) {
-      window.location.href = `${result.data}?game_id=${user_profile.game_id}&team_id=${user_profile.team_id}&group_id=${user_profile.group_id}`;
+    var redirect_url = result.data;
+    var param_set = false;
+    if (user_profile.team_id_enable && user_profile.team_id) {
+      redirect_url = `${redirect_url}?team_id=${user_profile.team_id}`;
+      param_set = true;
+    }
+
+    if (user_profile.minecraft_id_enable && user_profile.minecraft_id) {
+      redirect_url = `${redirect_url}?minecraft_id=${user_profile.minecraft_id}`;
+      param_set = true;
+    }
+
+    if (user_profile.server_id_enable && user_profile.server_id) {
+      redirect_url = `${redirect_url}?server_id=${user_profile.server_id}`;
+      param_set = true;
+    }
+
+    if (user_profile.game_id_enable && user_profile.game_id) {
+      redirect_url = `${redirect_url}?game_id=${user_profile.game_id}`;
+      param_set = true;
+    }
+
+    if (user_profile.group_id_enable && user_profile.group_id) {
+      redirect_url = `${redirect_url}?group_id=${user_profile.group_id}`;
+      param_set = true;
+    }
+
+    if (user_profile.gamipress_ranks_enable && user_profile.user_rank) {
+      redirect_url = `${redirect_url}?user_rank=${user_profile.user_rank}`;
+      param_set = true;
+    }
+
+    if (user_profile.gamipress_points_enable && user_profile.user_points) {
+      redirect_url = `${redirect_url}?user_points=${user_profile.user_points}`;
+      param_set = true;
+    }
+
+    if (param_set) {
+      window.location.href = redirect_url;
     } else {
       qrWarning.hidden = false;
-      warningData.innerText = "You must set Gameplay info in the User profile page.";
+      warningData.innerText = "You must set parameters in the User profile page and QR Reader Settings page.";
     }
   }, 1000);
 
