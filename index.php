@@ -28,7 +28,12 @@ if ( !class_exists( 'QR_Reader' ) ) {
 			add_action( 'wp_ajax_nopriv_change_select_page', array( &$this, 'change_select_page_callback' ) );
 			add_action( 'admin_menu', array( &$this, 'add_qr_reader_menu' ) );
 			add_action( 'admin_init', array( &$this, 'add_acf_form_head') );
+			register_deactivation_hook( qr_reader_plugin_file, array( &$this, 'clear_param_enable_settings' ) );
 	   	}
+
+		function clear_param_enable_settings() {
+			delete_option($this->_param_enable_key);
+		}
 
 		function qr_reader__register_block() {
 			register_block_type( 
