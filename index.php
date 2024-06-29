@@ -33,6 +33,13 @@ if ( !class_exists( 'QR_Reader' ) ) {
 
 		function clear_param_enable_settings() {
 			delete_option($this->_param_enable_key);
+			update_field('team_id_enable', 0, 'param_enable_settings');
+			update_field('minecraft_id_enable', 0, 'param_enable_settings');
+			update_field('server_id_enable', 0, 'param_enable_settings');
+			update_field('game_id_enable', 0, 'param_enable_settings');
+			update_field('group_id_enable', 0, 'param_enable_settings');
+			update_field('gamipress_ranks_enable', 0, 'param_enable_settings');
+			update_field('gamipress_points_enable', 0, 'param_enable_settings');
 		}
 
 		function qr_reader__register_block() {
