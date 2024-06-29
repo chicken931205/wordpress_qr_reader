@@ -9,7 +9,7 @@
  * @package qr-reader
  */
 
-define( 'qr_reader_version', '1.0.2' );
+define( 'qr_reader_version', '1.0.3' );
 define( 'qr_reader_plugin_file', __FILE__ );
 
 if ( !class_exists( 'QR_Reader' ) ) {
@@ -225,13 +225,13 @@ if ( !class_exists( 'QR_Reader' ) ) {
 
 			$param_enable = get_option($this->_param_enable_key, []);
 			if (isset($param_enable[$current_page_id])){
-				$team_id_enable = $param_enable[$current_page_id]['team_id_enable'];
-				$minecraft_id_enable = $param_enable[$current_page_id]['minecraft_id_enable'];
-				$server_id_enable = $param_enable[$current_page_id]['server_id_enable'];
-				$game_id_enable= $param_enable[$current_page_id]['game_id_enable'];
-				$group_id_enable = $param_enable[$current_page_id]['group_id_enable'];
-				$gamipress_ranks_enable = $param_enable[$current_page_id]['gamipress_ranks_enable'];
-				$gamipress_points_enable = $param_enable[$current_page_id]['gamipress_points_enable'];	
+				$team_id_enable = (int) $param_enable[$current_page_id]['team_id_enable'];
+				$minecraft_id_enable = (int) $param_enable[$current_page_id]['minecraft_id_enable'];
+				$server_id_enable = (int) $param_enable[$current_page_id]['server_id_enable'];
+				$game_id_enable= (int) $param_enable[$current_page_id]['game_id_enable'];
+				$group_id_enable = (int) $param_enable[$current_page_id]['group_id_enable'];
+				$gamipress_ranks_enable = (int) $param_enable[$current_page_id]['gamipress_ranks_enable'];
+				$gamipress_points_enable = (int) $param_enable[$current_page_id]['gamipress_points_enable'];	
 			} else {
 				$team_id_enable = 0;
 				$minecraft_id_enable = 0;
@@ -242,15 +242,17 @@ if ( !class_exists( 'QR_Reader' ) ) {
 				$gamipress_points_enable = 0;
 			}
 
-			$user_points = gamipress_get_user_points($user_id, 'point');
-			$user_rank = gamipress_get_user_rank($user_id, "gamerank");
-			$user_rank = strtolower($user_rank->post_title);
-
-            $team_id = get_field('team_id', 'user_' . $user_id);
+			//get gameplay info
+			$team_id = get_field('team_id', 'user_' . $user_id);
             $minecraft_id = get_field('minecraft_id', 'user_' . $user_id);
             $server_id = get_field('server_id', 'user_' . $user_id);
             $game_id = get_field('game_id', 'user_' . $user_id);
             $group_id = get_field('group_id', 'user_' . $user_id);
+
+			//get user game rank and points from gamipress
+			$user_points = gamipress_get_user_points($user_id, 'point');
+			$user_rank = gamipress_get_user_rank($user_id, "gamerank");
+			$user_rank = strtolower($user_rank->post_title);
 
 			$plugin_dir_path = plugin_dir_url(qr_reader_plugin_file);
 			wp_enqueue_style( 'style', $plugin_dir_path . 'src/asset/css/style.scss', [], qr_reader_version );
