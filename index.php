@@ -296,7 +296,7 @@ if ( !class_exists( 'QR_Reader' ) ) {
 
 			return 
 				'<div id="container">
-					<h1>QR Code Scanner</h1>
+					<h1>QR Code Scanner!</h1>
 
 					<div id="video-container" hidden="">
 						<video id="qr-video"></video>
