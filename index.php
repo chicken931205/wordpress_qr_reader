@@ -9,7 +9,7 @@
  * @package qr-reader
  */
 
-define( 'qr_reader_version', '1.0.4' );
+define( 'qr_reader_version', '1.0.9' );
 define( 'qr_reader_plugin_file', __FILE__ );
 
 if ( !class_exists( 'QR_Reader' ) ) {
@@ -135,6 +135,9 @@ if ( !class_exists( 'QR_Reader' ) ) {
 			}
 
 			$pages_field_key = $this->_get_acf_field_key('pages');
+			$show_debug_data_field_key = $this->_get_acf_field_key('show_debug_data');
+			$header_text_field_key = $this->_get_acf_field_key('header_text');
+			$info_text_field_key = $this->_get_acf_field_key('info_text');
 			$team_id_enable_field_key = $this->_get_acf_field_key('team_id_enable');
 			$minecraft_id_enable_field_key = $this->_get_acf_field_key('minecraft_id_enable');
 			$server_id_enable_field_key = $this->_get_acf_field_key('server_id_enable');
@@ -148,6 +151,9 @@ if ( !class_exists( 'QR_Reader' ) ) {
 			wp_enqueue_script('qrReaderSettings_js');
 			wp_localize_script('qrReaderSettings_js', 'param_enable', [
 				'pages_field_key' => $pages_field_key,
+				'show_debug_data_field_key' => $show_debug_data_field_key,
+				'header_text_field_key' => $header_text_field_key,
+				'info_text_field_key' => $info_text_field_key,
 				'team_id_enable_field_key' => $team_id_enable_field_key,
 				'minecraft_id_enable_field_key' => $minecraft_id_enable_field_key,
 				'server_id_enable_field_key' => $server_id_enable_field_key,
@@ -200,6 +206,9 @@ if ( !class_exists( 'QR_Reader' ) ) {
 			}
 
 			$page_id = get_field('pages', $post_id);
+			$header_text = get_field('header_text', $post_id);
+			$show_debug_data = get_field('show_debug_data', $post_id);
+			$info_text = get_field('info_text', $post_id);
 			$team_id_enable = get_field('team_id_enable', $post_id);
 			$minecraft_id_enable = get_field('minecraft_id_enable', $post_id);
 			$server_id_enable = get_field('server_id_enable', $post_id);
@@ -210,6 +219,9 @@ if ( !class_exists( 'QR_Reader' ) ) {
 
 			$param_enable = get_option($this->_param_enable_key, []);
 			$param_enable[$page_id] = array(
+				'header_text' => $header_text,
+				'show_debug_data' => $show_debug_data,
+				'info_text' => $info_text,
 				'team_id_enable' => $team_id_enable,
 				'minecraft_id_enable' => $minecraft_id_enable,
 				'server_id_enable' => $server_id_enable,
@@ -237,6 +249,7 @@ if ( !class_exists( 'QR_Reader' ) ) {
 
 			$param_enable = get_option($this->_param_enable_key, []);
 			if (isset($param_enable[$current_page_id])){
+				$show_debug_data = $param_enable[$current_page_id]['show_debug_data']; 
 				$team_id_enable = $param_enable[$current_page_id]['team_id_enable'];
 				$minecraft_id_enable = $param_enable[$current_page_id]['minecraft_id_enable'];
 				$server_id_enable = $param_enable[$current_page_id]['server_id_enable'];
@@ -245,6 +258,7 @@ if ( !class_exists( 'QR_Reader' ) ) {
 				$gamipress_ranks_enable = $param_enable[$current_page_id]['gamipress_ranks_enable'];
 				$gamipress_points_enable = $param_enable[$current_page_id]['gamipress_points_enable'];	
 			} else {
+				$show_debug_data = 0;
 				$team_id_enable = 0;
 				$minecraft_id_enable = 0;
 				$server_id_enable = 0;
@@ -273,6 +287,7 @@ if ( !class_exists( 'QR_Reader' ) ) {
 			wp_register_script('qrCodeScanner_js', $plugin_dir_path . 'src/asset/js/qrCodeScanner.js', array(), qr_reader_version, true);
 			wp_enqueue_script('qrCodeScanner_js');
 			wp_localize_script('qrCodeScanner_js', 'param_enable', [
+				'show_debug_data' => $show_debug_data,
 				'team_id_enable' => $team_id_enable,
 				'minecraft_id_enable' => $minecraft_id_enable,
 				'server_id_enable' => $server_id_enable,
@@ -294,9 +309,22 @@ if ( !class_exists( 'QR_Reader' ) ) {
 		function render_block_qr_reader() {
 			$plugin_dir_path = plugin_dir_url(qr_reader_plugin_file);
 
-			return 
-				'<div id="container">
-					<h1>QR Code Scanner!</h1>
+			global $post;
+			$current_page_id = $post->ID;
+
+			$param_enable = get_option($this->_param_enable_key, []);
+			if (isset($param_enable[$current_page_id])){
+				$show_debug_data = $param_enable[$current_page_id]['show_debug_data'];
+				$header_text = $param_enable[$current_page_id]['header_text'];
+				$info_text = $param_enable[$current_page_id]['info_text'];
+			} else {
+				$show_debug_data = 0;
+				$header_text = "QR Code Scanner";
+				$info_text = "Click the picture above to scan QR code";
+			}
+
+			$html .= '<div id="container">
+					<h1>' . $header_text . '</h1>
 
 					<div id="video-container" hidden="">
 						<video id="qr-video"></video>
@@ -306,16 +334,23 @@ if ( !class_exists( 'QR_Reader' ) ) {
 						<img src="' . $plugin_dir_path . 'src/asset/qr_icon.svg">
 					</a>
 
-					<button id="btn-stop-scan" type="submit" hidden="">Stop Scanning</button>
-					
-					<div id="qr-result" hidden="">
-						<b>Data:</b> <span id="outputData"></span>
+					<div id="qr-info">
+						<span>' . $info_text . '</span>
 					</div>
 
-					<div id="qr-warning"  hidden="">
+					<button id="btn-stop-scan" type="submit" hidden="">Stop Scanning</button>';
+			
+			if ($show_debug_data) {
+				$html .= '<div id="qr-result" hidden="">
+							<b>Data:</b> <span id="outputData"></span>
+						</div>';
+			}
+			
+			$html .= '<div id="qr-warning"  hidden="">
 						<b>Warning:</b> <span id="warningData"></span>
-					</div>
-				</div>';
+					</div>';
+			$html .= '</div>';
+			return $html;
 		}
    }
 }

@@ -3,15 +3,23 @@ import QrScanner from "./qr-scanner.min.js";
 const video = document.getElementById('qr-video');
 const videoContainer = document.getElementById('video-container');
 
-const outputData = document.getElementById('outputData');
-const qrResult = document.getElementById("qr-result");
+
+let qrResult, outputData;
+if (param_enable.show_debug_data) {
+  qrResult = document.getElementById("qr-result");
+  outputData = document.getElementById('outputData');
+}
+const qrInfo = document.getElementById("qr-info");
 const qrWarning = document.getElementById("qr-warning");
 const warningData = document.getElementById("warningData");
 const btnScanQR = document.getElementById("btn-scan-qr");
 const btnStopScan = document.getElementById("btn-stop-scan");
 
 function stop_scan() {
-  qrResult.hidden = false;
+  if (qrResult) {
+    qrResult.hidden = false;
+  }
+  qrInfo.hidden = false;
   btnScanQR.hidden = false;
   btnStopScan.hidden = true;
   videoContainer.hidden = true;
@@ -20,7 +28,10 @@ function stop_scan() {
 }
 
 function start_scan() {
-  qrResult.hidden = true;
+  if (qrResult) {
+    qrResult.hidden = true;
+  }
+  qrInfo.hidden = true;
   qrWarning.hidden = true;
   btnScanQR.hidden = true;
   btnStopScan.hidden = false;
@@ -109,7 +120,9 @@ function setScanResult(label, result) {
   stop_scan();
 
   console.log(`embed code: ${result.data}`);
-  label.textContent = result.data;
+  if (qrResult) {
+    label.textContent = result.data;
+  }
   
   setTimeout(() => {
     if (!param_enable.is_logged_in) {
@@ -125,9 +138,11 @@ function setScanResult(label, result) {
 
 const scanner = new QrScanner(video, result => setScanResult(outputData, result), {
   onDecodeError: error => {
-      outputData.textContent = error;
-      outputData.style.color = 'inherit';
-      qrResult.hidden = false;
+      if (qrResult) {
+        qrResult.hidden = false;
+        outputData.textContent = error;
+        outputData.style.color = 'inherit';
+      }
   },
   highlightScanRegion: true,
   highlightCodeOutline: true,
