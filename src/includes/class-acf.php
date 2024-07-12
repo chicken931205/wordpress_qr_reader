@@ -1,8 +1,8 @@
 <?php
 
-if ( !class_exists( 'ACF' ) ) {
+if ( !class_exists( 'ACF_Custom' ) ) {
 
-	class ACF {
+	class ACF_Custom {
 		
         private $_param_enable_key = "params_enable";
         private $_general_settings_key = "qr_general_settings";
@@ -53,7 +53,7 @@ if ( !class_exists( 'ACF' ) ) {
 			add_submenu_page(
 				'qr-reader',  // Parent slug
 				'QR Reader Settings',  // Page title
-				'Settings',           // Menu title
+				'General Settings',           // Menu title
 				'manage_options',    // Capability
 				'qr-reader-general-settings', // Menu slug
 				array(&$this, 'display_qr_reader_general_settings')
@@ -62,7 +62,7 @@ if ( !class_exists( 'ACF' ) ) {
 			add_submenu_page(
 				'qr-reader',  // Parent slug
 				'QR Reader Settings',  // Page title
-				'Settings',           // Menu title
+				'Page Settings',           // Menu title
 				'manage_options',    // Capability
 				'qr-reader-page-settings', // Menu slug
 				array(&$this, 'display_qr_reader_page_settings')
@@ -144,19 +144,9 @@ if ( !class_exists( 'ACF' ) ) {
                 wp_register_script('qrReaderGeneralSettings_js', $plugin_dir_path . 'src/asset/js/qrReaderGeneralSettings.js', [], qr_reader_version, true);
                 wp_enqueue_script('qrReaderGeneralSettings_js');
                 wp_localize_script('qrReaderGeneralSettings_js', 'general_settings', [
-                    'pages_field_key' => $pages_field_key,
                     'show_debug_data_field_key' => $show_debug_data_field_key,
                     'header_text_field_key' => $header_text_field_key,
                     'info_text_field_key' => $info_text_field_key,
-                    'team_id_enable_field_key' => $team_id_enable_field_key,
-                    'minecraft_id_enable_field_key' => $minecraft_id_enable_field_key,
-                    'server_id_enable_field_key' => $server_id_enable_field_key,
-                    'game_id_enable_field_key' => $game_id_enable_field_key,
-                    'group_id_enable_field_key' => $group_id_enable_field_key,
-                    'gamipress_ranks_enable_field_key' => $gamipress_ranks_enable_field_key,
-                    'gamipress_points_enable_field_key' => $gamipress_points_enable_field_key,
-                    'ajax_url' => admin_url('admin-ajax.php'),
-                    'nonce'    => wp_create_nonce('ajax_nonce')
                 ]);
 			} else if ($current_screen && $current_screen->base == 'qr-reader_page_qr-reader-page-settings') {
 				$pages_field_key = $this->_get_acf_field_key('pages');
@@ -173,9 +163,6 @@ if ( !class_exists( 'ACF' ) ) {
                 wp_enqueue_script('qrReaderPageSettings_js');
                 wp_localize_script('qrReaderPageSettings_js', 'param_enable', [
                     'pages_field_key' => $pages_field_key,
-                    'show_debug_data_field_key' => $show_debug_data_field_key,
-                    'header_text_field_key' => $header_text_field_key,
-                    'info_text_field_key' => $info_text_field_key,
                     'team_id_enable_field_key' => $team_id_enable_field_key,
                     'minecraft_id_enable_field_key' => $minecraft_id_enable_field_key,
                     'server_id_enable_field_key' => $server_id_enable_field_key,

@@ -27,7 +27,7 @@ if ( !class_exists( 'QR_Reader' ) ) {
 			register_deactivation_hook( qr_reader_plugin_file, array( &$this, 'clear_param_enable_settings' ) );
 
 			require_once __DIR__ . '/src/includes/class-acf.php';
-			new ACF();
+			new ACF_Custom();
 	   	}
 
 		function clear_param_enable_settings() {
