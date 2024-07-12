@@ -201,7 +201,7 @@ if ( !class_exists( 'ACF_Custom' ) ) {
                 $gamipress_points_enable = get_field('gamipress_points_enable', $post_id);
 
                 $param_enable = get_option($this->_param_enable_key, []);
-                if ($same_all_instances === 1) {
+                if ($same_all_instances === "1") {
                     $page_id = 'all';
                 }
                 $param_enable[$page_id] = array(
@@ -215,7 +215,7 @@ if ( !class_exists( 'ACF_Custom' ) ) {
                 );
 
                 update_option($this->_param_enable_key, $param_enable);
-                update_option();
+                update_option($this->_same_all_instances_key, $same_all_instances);
 			} else if ($post_id === 'qr_general_settings') {
                 $header_text = get_field('header_text', $post_id);
                 $show_debug_data = get_field('show_debug_data', $post_id);

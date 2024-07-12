@@ -9,7 +9,7 @@
  * @package qr-reader
  */
 
-define( 'qr_reader_version', '1.1.1' );
+define( 'qr_reader_version', '1.1.2' );
 define( 'qr_reader_plugin_file', __FILE__ );
 
 if ( !class_exists( 'QR_Reader' ) ) {
@@ -87,8 +87,8 @@ if ( !class_exists( 'QR_Reader' ) ) {
 				$is_logged_in = false;
 			}
 
-			$same_all_instances = get_option($this->_same_all_instances_key, 0);
-			if ($same_all_instances == 1) {
+			$same_all_instances = get_option($this->_same_all_instances_key, "0");
+			if ($same_all_instances === "1") {
 				$current_page_id = 'all';
 			}
 

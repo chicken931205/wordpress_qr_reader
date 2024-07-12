@@ -52,9 +52,9 @@ jQuery(document).ready(function($) {
     });
 
     var same_all_instances = $(`#acf-${param_enable.same_all_instances_field_key}`).val();
-    if (same_all_instances === 1) {
+    if (same_all_instances === "1") {
         $(`#acf-${param_enable.pages_field_key}`).attr('disabled', true);
-    } else if (same_all_instances === 0) {
+    } else if (same_all_instances === "0") {
         $(`#acf-${param_enable.pages_field_key}`).attr('disabled', true);
     }
     
