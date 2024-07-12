@@ -55,7 +55,7 @@ jQuery(document).ready(function($) {
     if (same_all_instances === "1") {
         $(`#acf-${param_enable.pages_field_key}`).attr('disabled', true);
     } else if (same_all_instances === "0") {
-        $(`#acf-${param_enable.pages_field_key}`).attr('disabled', true);
+        $(`#acf-${param_enable.pages_field_key}`).attr('disabled', false);
     }
     
 });
