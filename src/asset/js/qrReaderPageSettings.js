@@ -44,9 +44,9 @@ jQuery(document).ready(function($) {
     });
 
     $(`#acf-${param_enable.same_all_instances_field_key}`).on('change', function(e) {
-        if (e.target.value === 0) {
+        if (e.target.value === "0") {
             $(`#acf-${param_enable.pages_field_key}`).attr('disabled', false);
-        } else if (e.target.value === 1) {
+        } else if (e.target.value === "1") {
             $(`#acf-${param_enable.pages_field_key}`).attr('disabled', true);
         }
     });
