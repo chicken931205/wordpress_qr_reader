@@ -58,4 +58,6 @@ jQuery(document).ready(function($) {
         $(`#acf-${param_enable.pages_field_key}`).attr('disabled', false);
     }
     
+    var selectedValue = $(`#acf-${param_enable.pages_field_key}`).val();
+    // set_param_enable_fields(selectedValue);
 });

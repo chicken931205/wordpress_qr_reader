@@ -42,7 +42,7 @@ function start_scan() {
 
 function redirectToMinecraft(redirect_url) {
   var param_set = false;
-  if (param_enable.team_id_enable && param_enable.team_id) {
+  if (param_enable.team_id_enable === "1" && param_enable.team_id) {
     redirect_url = `${redirect_url}?team_id=${param_enable.team_id}`;
     param_set = true;
   }

@@ -9,7 +9,7 @@
  * @package qr-reader
  */
 
-define( 'qr_reader_version', '1.1.4' );
+define( 'qr_reader_version', '1.1.5' );
 define( 'qr_reader_plugin_file', __FILE__ );
 
 if ( !class_exists( 'QR_Reader' ) ) {
