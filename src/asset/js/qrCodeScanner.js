@@ -17,7 +17,7 @@ const btnStopScan = document.getElementById("btn-stop-scan");
 
 function stop_scan() {
   if (qrResult) {
-    qrResult.hidden = false;
+    qrResult.hidden = true;
   }
   qrInfo.hidden = false;
   btnScanQR.hidden = false;
@@ -121,6 +121,7 @@ function setScanResult(label, result) {
 
   console.log(`embed code: ${result.data}`);
   if (qrResult) {
+    qrResult.hidden = false;
     label.textContent = result.data;
   }
   
