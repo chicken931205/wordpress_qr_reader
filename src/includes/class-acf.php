@@ -6,6 +6,7 @@ if ( !class_exists( 'ACF_Custom' ) ) {
 		
         private $_param_enable_key = "params_enable";
         private $_general_settings_key = "qr_general_settings";
+        private $_same_all_instances_key = "same_all_instances";
 
         public function __construct() {
 			add_action( 'admin_init', array( &$this, 'add_acf_form_head') );
@@ -149,6 +150,7 @@ if ( !class_exists( 'ACF_Custom' ) ) {
                     'info_text_field_key' => $info_text_field_key,
                 ]);
 			} else if ($current_screen && $current_screen->base == 'qr-reader_page_qr-reader-page-settings') {
+                $same_all_instances_field_key = $this->_get_acf_field_key('same_for_all_instances');
 				$pages_field_key = $this->_get_acf_field_key('pages');
                 $team_id_enable_field_key = $this->_get_acf_field_key('team_id_enable');
                 $minecraft_id_enable_field_key = $this->_get_acf_field_key('minecraft_id_enable');
@@ -162,6 +164,7 @@ if ( !class_exists( 'ACF_Custom' ) ) {
                 wp_register_script('qrReaderPageSettings_js', $plugin_dir_path . 'src/asset/js/qrReaderPageSettings.js', array('jquery'), qr_reader_version, true);
                 wp_enqueue_script('qrReaderPageSettings_js');
                 wp_localize_script('qrReaderPageSettings_js', 'param_enable', [
+                    'same_all_instances_field_key' => $same_all_instances_field_key,
                     'pages_field_key' => $pages_field_key,
                     'team_id_enable_field_key' => $team_id_enable_field_key,
                     'minecraft_id_enable_field_key' => $minecraft_id_enable_field_key,
@@ -174,11 +177,6 @@ if ( !class_exists( 'ACF_Custom' ) ) {
                     'nonce'    => wp_create_nonce('ajax_nonce')
                 ]);
 			}
-
-
-			
-
-			
 		}
 
         //update param enable settings
@@ -192,6 +190,7 @@ if ( !class_exists( 'ACF_Custom' ) ) {
             }
 
 			if ($post_id === 'param_enable_settings') {
+                $same_all_instances = get_field('same_for_all_instances');
                 $page_id = get_field('pages', $post_id);
                 $team_id_enable = get_field('team_id_enable', $post_id);
                 $minecraft_id_enable = get_field('minecraft_id_enable', $post_id);
@@ -202,6 +201,9 @@ if ( !class_exists( 'ACF_Custom' ) ) {
                 $gamipress_points_enable = get_field('gamipress_points_enable', $post_id);
 
                 $param_enable = get_option($this->_param_enable_key, []);
+                if ($same_all_instances === 1) {
+                    $page_id = 'all';
+                }
                 $param_enable[$page_id] = array(
                     'team_id_enable' => $team_id_enable,
                     'minecraft_id_enable' => $minecraft_id_enable,
@@ -213,6 +215,7 @@ if ( !class_exists( 'ACF_Custom' ) ) {
                 );
 
                 update_option($this->_param_enable_key, $param_enable);
+                update_option();
 			} else if ($post_id === 'qr_general_settings') {
                 $header_text = get_field('header_text', $post_id);
                 $show_debug_data = get_field('show_debug_data', $post_id);

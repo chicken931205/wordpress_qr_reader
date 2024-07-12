@@ -9,7 +9,7 @@
  * @package qr-reader
  */
 
-define( 'qr_reader_version', '1.1.0' );
+define( 'qr_reader_version', '1.1.1' );
 define( 'qr_reader_plugin_file', __FILE__ );
 
 if ( !class_exists( 'QR_Reader' ) ) {
@@ -17,6 +17,7 @@ if ( !class_exists( 'QR_Reader' ) ) {
 
 		private $_param_enable_key = "params_enable";
 		private $_general_settings_key = "qr_general_settings";
+		private $_same_all_instances_key = "same_all_instances";
 
 	   	public function __construct() {
 			add_action( 'init', array( &$this, 'qr_reader__register_block' ) );
@@ -84,6 +85,11 @@ if ( !class_exists( 'QR_Reader' ) ) {
 				$is_logged_in = true;
 			} else {
 				$is_logged_in = false;
+			}
+
+			$same_all_instances = get_option($this->_same_all_instances_key, 0);
+			if ($same_all_instances == 1) {
+				$current_page_id = 'all';
 			}
 
 			$param_enable = get_option($this->_param_enable_key, []);
