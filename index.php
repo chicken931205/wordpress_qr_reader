@@ -26,7 +26,7 @@ if ( !class_exists( 'QR_Reader' ) ) {
 			add_action( 'wp_ajax_nopriv_change_select_page', array( &$this, 'change_select_page_callback' ) );
 			register_deactivation_hook( qr_reader_plugin_file, array( &$this, 'clear_param_enable_settings' ) );
 
-			require_once __DIR__ . 'src/includes/class-acf.php';
+			require_once __DIR__ . '/src/includes/class-acf.php';
 			new ACF();
 	   	}
 
