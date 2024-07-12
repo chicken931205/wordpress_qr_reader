@@ -9,7 +9,7 @@
  * @package qr-reader
  */
 
-define( 'qr_reader_version', '1.0.10' );
+define( 'qr_reader_version', '1.1.0' );
 define( 'qr_reader_plugin_file', __FILE__ );
 
 if ( !class_exists( 'QR_Reader' ) ) {
@@ -24,7 +24,6 @@ if ( !class_exists( 'QR_Reader' ) ) {
 			add_filter( 'script_loader_tag', array( &$this, 'add_type_attribute_to_script_tag' ), 10, 3 );
 			add_action( 'wp_ajax_change_select_page', array( &$this, 'change_select_page_callback' ) );
 			add_action( 'wp_ajax_nopriv_change_select_page', array( &$this, 'change_select_page_callback' ) );
-			add_action( 'admin_menu', array( &$this, 'add_qr_reader_menu' ) );
 			register_deactivation_hook( qr_reader_plugin_file, array( &$this, 'clear_param_enable_settings' ) );
 
 			require_once __DIR__ . 'src/includes/class-acf.php';
@@ -50,101 +49,12 @@ if ( !class_exists( 'QR_Reader' ) ) {
 				)
 			);
 		}
-
 		
-
-		function add_qr_reader_menu() {
-			add_menu_page(
-				'QR Reader', // Page title
-				'QR Reader', // Menu title
-				'manage_options', // Capability
-				'qr-reader',  // Menu slug
-				array(&$this, 'display_qr_reader_settings'), 
-				'dashicons-admin-generic', // Icon URL or Dashicon class
-				6                    // Position
-			);
-
-			add_submenu_page(
-				'qr-reader',  // Parent slug
-				'QR Reader Settings',  // Page title
-				'Settings',           // Menu title
-				'manage_options',    // Capability
-				'qr-reader-general-settings', // Menu slug
-				array(&$this, 'display_qr_reader_general_settings')
-			);
-
-			add_submenu_page(
-				'qr-reader',  // Parent slug
-				'QR Reader Settings',  // Page title
-				'Settings',           // Menu title
-				'manage_options',    // Capability
-				'qr-reader-page-settings', // Menu slug
-				array(&$this, 'display_qr_reader_page_settings')
-			);
-
-			remove_submenu_page('qr-reader', 'qr-reader');
-		}
-
-		function display_qr_reader_general_settings() {
-			$field_group_key = $this->_get_acf_field_group_key("QR General Settings");
-			?>
-				<div class="wrap">
-					<h1>QR Reader Settings</h1>
-					<?php
-						acf_form([
-							'post_id' => 'qr_general_settings', 
-							'field_groups' => [$field_group_key],
-							'submit_value' => 'Save Settings', 
-						]);  
-					?>
-				</div>
-			<?php
-		}
-
-		function display_qr_reader_page_settings() {
-			$field_group_key = $this->_get_acf_field_group_key("QR Page Settings");
-			?>
-				<div class="wrap">
-					<h1>QR Reader Settings</h1>
-					<?php
-						acf_form([
-							'post_id' => 'param_enable_settings', 
-							'field_groups' => [$field_group_key],
-							'submit_value' => 'Save Settings', 
-						]);  
-					?>
-				</div>
-			<?php
-		}
-
 		function add_type_attribute_to_script_tag($tag, $handle, $src) {
 			if ('qrCodeScanner_js' === $handle) {
 				$tag = '<script type="module" src="' . esc_url($src) . '"></script>';
 			}
 			return $tag;
-		}
-
-		private function _get_acf_field_key($field_name) {
-			$field = acf_get_field($field_name);
-			if ($field) {
-				return $field['key'];
-			}
-			return '';
-		}
-
-		private function _get_acf_field_group_key($title) {
-			if (!function_exists('acf_get_field_groups')) {
-				return false;
-			}
-			
-			$field_groups = acf_get_field_groups();
-			foreach ($field_groups as $field_group) {
-				if ($field_group['title'] === $title) {
-					return $field_group['key'];
-				}
-			}
-			
-			return false;
 		}
 
 		//handle change event of pages field
@@ -162,7 +72,6 @@ if ( !class_exists( 'QR_Reader' ) ) {
 
 			wp_send_json_success($response);
 		}
-
 		
 		function load_block_editor_assets() {
 			$current_user = wp_get_current_user();
